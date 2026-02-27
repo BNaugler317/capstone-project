@@ -11,7 +11,7 @@
         <link rel="stylesheet" type="text/css" href="css/capstone.css" />
     </head>
 
-    <body>
+    <body class="page-index">
         <?php include("header.php"); ?>
 
         <main>

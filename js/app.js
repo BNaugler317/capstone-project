@@ -1,8 +1,10 @@
-const layout = document.getElementById('layout');
-const hamburgerBtn = document.getElementById('hamburgerBtn');
+document.addEventListener("DOMContentLoaded", () => {
+  const page = document.querySelector(".page");
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
 
-if (hamburgerBtn && layout) {
-    hamburgerBtn.addEventListener('click', () => {
-        layout.classList.toggle("menu-closed");
-    });
-}
+  if (!page || !hamburgerBtn) return;
+
+  hamburgerBtn.addEventListener("click", () => {
+    page.classList.toggle("menu-closed");
+  });
+});
