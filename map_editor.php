@@ -1,5 +1,17 @@
 <?php
-// map_editor.php
+  require("database.php");
+
+  $section = $_GET['section'] ?? 'campaigns';
+  $selectedCampaignID = $_GET['campaignID'] ?? null;
+
+  $campaigns = [];
+
+  $query = "SELECT campaignID, name, description FROM campaigns ORDER BY name";
+
+  $statement = $db->prepare($query);
+  $statement->execute();
+  $campaigns = $statement->fetchAll();
+  $statement->closeCursor();
 ?>
 <!DOCTYPE html>
 <html>
@@ -57,23 +69,8 @@
                </section>
 
                <!-- RIGHT: Sidebar menu -->
-                <aside class="sidebar">
-                  <div class="sidebar-title">Menu</div>
+                <?php include("menu.php"); ?>
 
-                  <div class="menu-group">
-                    <div class="menu-group-title">World Details ▼</div>
-                    <button class="menu-item">LOCATIONS</button>
-                    <button class="menu-item">FACTIONS</button>
-                    <button class="menu-item">NPC'S</button>
-                    <button class="menu-item">ENEMIES</button>
-                    <button class="menu-item">TREASURES</button>
-                    <button class="menu-item is-active">MAP EDITOR</button>
-                  </div>
-
-                  <div class="menu-group">
-                    <div class="menu-group-title">PLAYERS TAB ▼</div>
-                  </div>
-                </aside>  
             </div>
         </main>
 

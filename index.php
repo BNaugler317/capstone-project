@@ -1,6 +1,33 @@
 <?php
-
+    // campaign list query. displays list of campaigns in the menu
     require("database.php");
+
+    $section = $_GET['section'] ?? 'campaigns';
+    $selectedCampaignID = $_GET['campaignID'] ?? null;
+
+    $campaigns = [];
+
+    $query = "SELECT campaignID, name, description FROM campaigns ORDER BY name";
+
+    $statement = $db->prepare($query);
+    $statement->execute();
+    $campaigns = $statement->fetchAll();
+    $statement->closeCursor();
+
+    // campaign data query. displays campaign data
+    $selectedCampaign = null;
+
+    if ($selectedCampaignID) {
+        $query = "SELECT campaignID, name, description, campaignEvents, createdAT
+                  FROM campaigns
+                  WHERE campaignID = :campaignID";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+        $statement->execute();
+
+        $selectedCampaign = $statement->fetch();
+        $statement->closeCursor();
+    }
 
 ?>
 <!DOCTYPE html>
@@ -16,39 +43,46 @@
 
         <main>
           <div class="page" id="layout">
-            <!-- left main content -->
+            <!-- left panel area -->
              <section class="content">
-              <div class="section-title">Locations</div>
+              <div class="section-title">Campaigns</div>
 
+              <!-- Left panel display data-->
               <div class="content-grid">
                 <div class="panel panel-display">
-                  <!-- saved info appears here -->
+                  <h3>Campaign Display</h3>
+
+                  <?php if ($selectedCampaign) : ?>
+                    <h4><?php echo htmlspecialchars($selectedCampaign['name']);?></h4>
+
+                    <p>
+                      <strong>Description:</strong><br>
+                      <?php echo nl2br(htmlspecialchars($selectedCampaign['description'])); ?>
+                    </p>
+
+                    <p>
+                      <strong>Campaign Events:</strong><br>
+                      <?php echo nl2br(htmlspecialchars($selectedCampaign['campaignEvents'])); ?>
+                    </p>
+
+                    <p>
+                      <strong>Created:</strong><br>
+                      <?php echo nl2br(htmlspecialchars($selectedCampaign['createdAT'])); ?>
+                    </p>
+                  <?php else : ?>
+                    <p>Select a campaign from the menu to view details.</p>
+                  <?php endif; ?>
                 </div>
 
                 <div class="panel panel-editor">
-                  <!-- form inputs appear here -->
+                  <!-- Right panel input-->
                 </div>
               </div>
             </section>
 
-            <!-- right menu -->
-            <aside class="sidebar" id="sidebar">
-              <div class="sidebar-title">MENU</div>
+            <!-- right panel slide out menu-->
+            <?php include("menu.php"); ?>
 
-              <div class="menu-group">
-                <div class="menu-group-title">WORLD DETAILS</div>
-                <button class="menu-item is-active">Locations</button>
-                <button class="menu-item">FACTIONS</button>
-                <button class="menu-item">NPC'S</button>
-                <button class="menu-item">ENEMIES</button>
-                <button class="menu-item">TREASURES</button>
-                <button class="menu-item">MAP EDITOR</button>
-              </div>
-
-              <div class="menu-group">
-                <div class="menu-group_title">PLAYERS TAB</div>
-              </div>
-            </aside>
           </div>
           
         </main>
