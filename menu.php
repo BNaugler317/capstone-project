@@ -32,14 +32,24 @@
       Campain Details ▼ 
     </div>
 
-    <div class="menu-submenu">
-      <a
-        href="<?php echo $selectedCampaignID ? 'index.php?section=locations&campaignID=' . $selectedCampaignID : '#'; ?>"
-        class=" menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
-      >
-        Locations
-      </a>
+    <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+      Locations ▼ 
+    </div>
 
+    <div class="menu-submenu<?php echo $section === 'locations' ? '' : 'closed'; ?>">
+      <?php if ($selectedCampaignID && count($locations) > 0) : ?>
+        <?php foreach ($locations as $location) : ?>
+          <?php $isSelectedLocation = ($isSelectedLocationID == $location['locationID']); ?>
+
+          <a href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>&locationID=<?php echo $location['locationID']; ?>"
+             class="menu-sub-item<?php echo $isSelectedLocation ? ' is-active' : ''; ?>">
+            <?php echo htmlspecialchars($location['locationName']); ?>
+          </a>
+        <?php endforeach; ?>
+      <?php elseif ($selectedCampaignID) : ?>
+        <p class="menu-sub-item">No locations found</p>
+      <?php endif; ?>
+      
       <a
         href="<?php echo $selectedCampaignID ? 'index.php?section=npcs&campaignID=' . $selectedCampaignID : '#'; ?>"
         class="menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
