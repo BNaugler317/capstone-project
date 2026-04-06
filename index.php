@@ -102,82 +102,85 @@ if ($selectedCampaignID && $selectedLocationID) {
               <!-- Left panel display data-->
               <div class="content-grid">
                 <div class="panel panel-display">
-                  <?php if (!$selectedCampaignID) : ?>
-                    <p>Select a campaign from the campaign menu.</p>
+                  <div class="panel-display-content">
+                    <?php if (!$selectedCampaignID) : ?>
+                      <p>Select a campaign from the campaign menu.</p>
 
-                  <?php elseif ($section === 'campaigns') : ?>
-                    <h3>Campaign Display</h3>
+                    <?php elseif ($section === 'campaigns') : ?>
+                      <h3>Campaign Display</h3>
 
-                  <?php if ($selectedCampaign) : ?>
-                    <h4><?php echo htmlspecialchars($selectedCampaign['name']);?></h4>
+                    <?php if ($selectedCampaign) : ?>
+                      <h4><?php echo htmlspecialchars($selectedCampaign['name']);?></h4>
 
-                    <p>
-                      <strong>Description:</strong><br>
-                      <?php echo nl2br(htmlspecialchars($selectedCampaign['description'])); ?>
-                    </p>
+                      <p>
+                        <strong>Description:</strong><br>
+                        <?php echo nl2br(htmlspecialchars($selectedCampaign['description'])); ?>
+                      </p>
 
-                    <p>
-                      <strong>Campaign Events:</strong><br>
-                      <?php echo nl2br(htmlspecialchars($selectedCampaign['campaignEvents'])); ?>
-                    </p>
+                      <p>
+                        <strong>Campaign Events:</strong><br>
+                        <?php echo nl2br(htmlspecialchars($selectedCampaign['campaignEvents'])); ?>
+                      </p>
 
-                    <p>
-                      <strong>Created:</strong><br>
-                      <?php echo htmlspecialchars($selectedCampaign['createdAT']); ?>
-                    </p>
-                  <?php else : ?>
-                    <p>Select a campaign from the menu to view details.</p>
-                  <?php endif; ?>
+                      <p>
+                        <strong>Created:</strong><br>
+                        <?php echo htmlspecialchars($selectedCampaign['createdAT']); ?>
+                      </p>
+                    <?php else : ?>
+                      <p>Select a campaign from the menu to view details.</p>
+                    <?php endif; ?>
 
-                <!--campaign details displays in left panel-->
+                    <!--campaign details displays in left panel-->
 
-                <?php elseif ($section === 'locations') : ?>
-                  <h3>Location Display</h3>
+                    <?php elseif ($section === 'locations') : ?>
+                      <h3>Location Display</h3>
 
-                  <?php if ($selectedLocation) : ?>
-                    <h4><?php echo htmlspecialchars($selectedLocation['locationName']); ?></h4>
+                    <?php if ($selectedLocation) : ?>
+                      <h4><?php echo htmlspecialchars($selectedLocation['locationName']); ?></h4>
 
-                    <p>
-                      <strong>Description:</strong><br>
-                      <?php echo nl2br(htmlspecialchars($selectedLocation['locationDescription'])); ?>
-                    </p>
+                      <p>
+                        <strong>Description:</strong><br>
+                        <?php echo nl2br(htmlspecialchars($selectedLocation['locationDescription'])); ?>
+                      </p>
 
-                    <p>
-                      <strong>NPC Count:</strong><br>
-                      <?php echo htmlspecialchars($selectedLocation['npcCount']); ?>
-                    </p>
+                      <p>
+                        <strong>NPC Count:</strong><br>
+                        <?php echo htmlspecialchars($selectedLocation['npcCount']); ?>
+                      </p>
 
-                    <p>
-                      <strong>Enemy Count:</strong><br>
-                      <?php echo htmlspecialchars($selectedLocation['enemyCount']); ?>
-                    </p>
+                      <p>
+                        <strong>Enemy Count:</strong><br>
+                        <?php echo htmlspecialchars($selectedLocation['enemyCount']); ?>
+                      </p>
 
-                    <p>
-                      <strong>Location Items:</strong><br>
-                      <?php echo nl2br(htmlspecialchars($selectedLocation['locationItems'])); ?>
-                    </p>
+                      <p>
+                        <strong>Location Items:</strong><br>
+                        <?php echo nl2br(htmlspecialchars($selectedLocation['locationItems'])); ?>
+                      </p>
 
-                    <p>
-                      <strong>Dungeons:</strong><br>
-                      <?php echo nl2br(htmlspecialchars($selectedLocation['dungeons'])); ?>
-                    </p>
+                      <p>
+                        <strong>Dungeons:</strong><br>
+                        <?php echo nl2br(htmlspecialchars($selectedLocation['dungeons'])); ?>
+                      </p>
 
-                    <p>
-                      <strong>Created:</strong><br>
-                      <?php echo htmlspecialchars($selectedLocation['createdAT']); ?>
-                    </p>
+                      <p>
+                        <strong>Created:</strong><br>
+                        <?php echo htmlspecialchars($selectedLocation['createdAT']); ?>
+                      </p>
 
-                  <?php else : ?>
-                    <p>Select a location from the menu to view its details.</p>
-                  <?php endif; ?>
-                  <?php endif; ?>
-
+                    <?php else : ?>
+                      <p>Select a location from the menu to view its details.</p>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                    
                 </div>
 
-                <div class="panel panel-editor">
-                  <!-- Right panel input-->
-                </div>
               </div>
+
+              <div class="panel panel-editor">
+                <!-- Right panel input-->
+              </div>
+            </div>
             </section>
 
             <!-- right panel slide out menu-->

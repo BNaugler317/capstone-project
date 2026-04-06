@@ -29,27 +29,31 @@
 
   <div class="menu-group">
     <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
-      Campain Details ▼ 
+      Campaign Details ▼ 
     </div>
 
-    <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
-      Locations ▼ 
+    <div class="menu-submenu<?php echo $selectedCampaignID ? '' : ' closed'; ?>">
+      <div class="menu-group">
+        <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+            Locations ▼ 
+          </div>
+
+          <div class="menu-submenu<?php echo $section === 'locations' ? '' : ' closed'; ?>">
+            <?php if ($selectedCampaignID && count($locations) > 0) : ?>
+              <?php foreach ($locations as $location) : ?>
+                <?php $isSelectedLocation = ($selectedLocationID == $location['locationID']); ?>
+
+                <a href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>&locationID=<?php echo $location['locationID']; ?>"
+                  class="menu-sub-item<?php echo $isSelectedLocation ? ' is-active' : ''; ?>">
+                  <?php echo htmlspecialchars($location['locationName']); ?>
+                </a>
+              <?php endforeach; ?>
+            <?php elseif ($selectedCampaignID) : ?>
+              <p class="menu-sub-item">No locations found</p>
+            <?php endif; ?>
+      </div>
     </div>
-
-    <div class="menu-submenu<?php echo $section === 'locations' ? '' : 'closed'; ?>">
-      <?php if ($selectedCampaignID && count($locations) > 0) : ?>
-        <?php foreach ($locations as $location) : ?>
-          <?php $isSelectedLocation = ($isSelectedLocationID == $location['locationID']); ?>
-
-          <a href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>&locationID=<?php echo $location['locationID']; ?>"
-             class="menu-sub-item<?php echo $isSelectedLocation ? ' is-active' : ''; ?>">
-            <?php echo htmlspecialchars($location['locationName']); ?>
-          </a>
-        <?php endforeach; ?>
-      <?php elseif ($selectedCampaignID) : ?>
-        <p class="menu-sub-item">No locations found</p>
-      <?php endif; ?>
-      
+ 
       <a
         href="<?php echo $selectedCampaignID ? 'index.php?section=npcs&campaignID=' . $selectedCampaignID : '#'; ?>"
         class="menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
@@ -89,7 +93,7 @@
   <div class="menu-group">
     <a
       href="<?php echo $selectedCampaignID ? 'map_editor.php?campaignID=' . $selectedCampaignID : '#'; ?>"
-      class="menu-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
+      class="menu-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?><?php echo $section === 'mapEditor' ? ' is-active' : ''; ?>"
     >
       Map Editor
     </a>

@@ -310,3 +310,13 @@ footer.footer {
   height: 100%;
   display: block;
 }
+
+.panel-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-display-content {
+  overflow: auto;
+  flex: 1;
+}

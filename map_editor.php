@@ -1,10 +1,12 @@
 <?php
   require("database.php");
 
-  $section = $_GET['section'] ?? 'campaigns';
+  $section = 'mapEditor';
   $selectedCampaignID = $_GET['campaignID'] ?? null;
+  $selectedLoactionID = $_GET['locationID'] ?? null;
 
   $campaigns = [];
+  $locations = [];
 
   $query = "SELECT campaignID, name, description FROM campaigns ORDER BY name";
 
@@ -12,6 +14,16 @@
   $statement->execute();
   $campaigns = $statement->fetchAll();
   $statement->closeCursor();
+
+  if ($selectedCampaignID) {
+    $query = "SELECT locationID, locationName FROM Locations WHERE campaignID = :campaignID
+              ORDER BY locationName";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+    $statement->execute();
+    $locations = $statement->fetchAll();
+    $statement->closeCursor();
+  }
 ?>
 <!DOCTYPE html>
 <html>
