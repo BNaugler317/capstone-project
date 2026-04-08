@@ -5,6 +5,9 @@
     $section = $_GET['section'] ?? 'campaigns';
     $selectedCampaignID = $_GET['campaignID'] ?? null;
     $selectedLocationID = $_GET['locationID'] ?? null;
+    $selectedNpcID = $_GET['npcID'] ?? null;
+    $selectedEnemyID = $_GET['enemyID'] ?? null;
+    $selectedFactionID = $_GET['factionID'] ?? null;
 
     $campaigns = [];
 
@@ -57,6 +60,87 @@ if ($selectedCampaignID && $selectedLocationID) {
   $statement->closeCursor();
 }
 
+// campaign details NPC's will display list of selectable npc's than display data on left panel
+
+$npcs = [];
+
+if ($selectedCampaignID) {
+  $query = "SELECT npcID, npcName FROM npcs WHERE campaignID = :campaignID ORDER BY npcName";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $npcs = $statement->fetchAll();
+  $statement->closeCursor();
+}
+
+$selectedNpc = null;
+
+if ($selectedCampaignID && $selectedNpcID) {
+  $query = "SELECT * FROM npcs WHERE npcID = :npcID AND campaignID = :campaignID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':npcID', $selectedNpcID, PDO::PARAM_INT);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $selectedNpc = $statement->fetch();
+  $statement->closeCursor();
+}
+
+// campaign details Enemies will display list of selectable enemies than display data on left panel
+
+$enemies = [];
+
+if ($selectedCampaignID) {
+  $query = "SELECT enemyID, enemyName FROM Enemies WHERE campaignID = :campaignID ORDER BY enemyName";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $enemies = $statement->fetchAll();
+  $statement->closeCursor();
+}
+
+$selectedEnemy = null;
+
+if ($selectedCampaignID && $selectedEnemyID) {
+  $query = "SELECT * FROM Enemies WHERE enemyID = :enemyID AND campaignID = :campaignID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':enemyID', $selectedEnemyID, PDO::PARAM_INT);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $selectedEnemy = $statement->fetch();
+  $statement->closeCursor();
+}
+
+// campaign details Factions will display list of selectable factions than display data on left panel
+
+$factions = [];
+
+if ($selectedCampaignID) {
+  $query = "SELECT factionID, name FROM Factions WHERE campaignID = :campaignID ORDER BY name";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $factions = $statement->fetchAll();
+  $statement->closeCursor();
+}
+
+$selectedFaction = null;
+
+if ($selectedCampaignID && $selectedFactionID) {
+  $query = "SELECT * FROM Factions WHERE factionID = :factionID AND campaignID = :campaignID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':factionID', $selectedFactionID, PDO::PARAM_INT);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $selectedFaction = $statement->fetch();
+  $statement->closeCursor();
+}
+
 
 
 ?>
@@ -74,7 +158,7 @@ if ($selectedCampaignID && $selectedLocationID) {
         <main>
           <div class="page" id="layout">
             <!-- left panel area -->
-             <section class="content">
+            <section class="content">
               <div class="section-title">
                 <?php
                   switch ($section) {
@@ -130,10 +214,10 @@ if ($selectedCampaignID && $selectedLocationID) {
                       <p>Select a campaign from the menu to view details.</p>
                     <?php endif; ?>
 
-                    <!--campaign details displays in left panel-->
+                    <!--campaign details displays in left panel (Location)-->
 
                     <?php elseif ($section === 'locations') : ?>
-                      <h3>Location Display</h3>
+                      <h3>Location Data</h3>
 
                     <?php if ($selectedLocation) : ?>
                       <h4><?php echo htmlspecialchars($selectedLocation['locationName']); ?></h4>
@@ -171,19 +255,47 @@ if ($selectedCampaignID && $selectedLocationID) {
                     <?php else : ?>
                       <p>Select a location from the menu to view its details.</p>
                     <?php endif; ?>
-                    <?php endif; ?>
                     
+
+                    <!--campaign details displays in left panel (NPC's)-->
+
+                    <?php elseif ($section === 'npcs') : ?>
+                      <h3>NPC Data</h3>
+
+                      <?php if ($selectedNpc) : ?>
+                        <h4><?php echo htmlspecialchars($selectedNpc['npcName']); ?></h4>
+
+                        <p>
+                          <strong>Description:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedNpc['npcDescription'])); ?>
+                        </p>
+
+                        <p>
+                          <strong>Notes:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedNpc['npcNotes'])); ?>
+                        </p>
+
+                        <p>
+                          <strong>Created:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedNpc['createdAT'])); ?>
+                        </p>
+                      <?php else : ?>
+                        <p>Select an NPC from the menu to view details.</p>
+                      <?php endif; ?>
+                      <?php endif; ?>
+
+                  </div>  
+                </div>
+
+                <div class="panel panel-editor">
+                  <!-- Right panel input-->
                 </div>
 
               </div>
 
-              <div class="panel panel-editor">
-                <!-- Right panel input-->
-              </div>
-            </div>
             </section>
 
-            <!-- right panel slide out menu-->
+            <!-- slide out menu-->
             <?php include("menu.php"); ?>
 
           </div>

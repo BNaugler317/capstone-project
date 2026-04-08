@@ -36,44 +36,86 @@
       <div class="menu-group">
         <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
             Locations ▼ 
-          </div>
+        </div>
 
-          <div class="menu-submenu<?php echo $section === 'locations' ? '' : ' closed'; ?>">
-            <?php if ($selectedCampaignID && count($locations) > 0) : ?>
-              <?php foreach ($locations as $location) : ?>
-                <?php $isSelectedLocation = ($selectedLocationID == $location['locationID']); ?>
+        <div class="menu-submenu<?php echo $section === 'locations' ? '' : ' closed'; ?>">
+          <?php if ($selectedCampaignID && count($locations) > 0) : ?>
+            <?php foreach ($locations as $location) : ?>
+              <?php $isSelectedLocation = ($selectedLocationID == $location['locationID']); ?>
 
-                <a href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>&locationID=<?php echo $location['locationID']; ?>"
-                  class="menu-sub-item<?php echo $isSelectedLocation ? ' is-active' : ''; ?>">
-                  <?php echo htmlspecialchars($location['locationName']); ?>
-                </a>
-              <?php endforeach; ?>
-            <?php elseif ($selectedCampaignID) : ?>
-              <p class="menu-sub-item">No locations found</p>
-            <?php endif; ?>
+              <a href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>&locationID=<?php echo $location['locationID']; ?>"
+                class="menu-sub-item<?php echo $isSelectedLocation ? ' is-active' : ''; ?>">
+                <?php echo htmlspecialchars($location['locationName']); ?>
+              </a>
+            <?php endforeach; ?>
+          <?php elseif ($selectedCampaignID) : ?>
+            <p class="menu-sub-item">No locations found</p>
+          <?php endif; ?>
+        </div>
       </div>
-    </div>
  
-      <a
-        href="<?php echo $selectedCampaignID ? 'index.php?section=npcs&campaignID=' . $selectedCampaignID : '#'; ?>"
-        class="menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
-      >
-        NPCs
-      </a>
+      <div class="menu-group">
+        <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+            NPC's ▼ 
+        </div>
 
-      <a
-        href="<?php echo $selectedCampaignID ? 'index.php?section=factions&campaignID=' . $selectedCampaignID : '#'; ?>"
-        class="menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
-      >
-        Factions
-      </a>
+        <div class="menu-submenu<?php echo $section === 'npcs' ? '' : ' closed'; ?>">
+          <?php if ($selectedCampaignID && count($npcs) > 0) : ?>
+            <?php foreach ($npcs as $npc) : ?>
+              <?php $isSelectedNpc = ($selectedNpcID == $npc['npcID']); ?>
 
-      <a
-        href="<?php echo $selectedCampaignID ? 'index.php?section=enemies&campaignID=' . $selectedCampaignID : '#'; ?>"
-        class="menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
-      >
-        Enemies
-      </a>
+              <a href="index.php?section=npcs&campaignID=<?php echo $selectedCampaignID; ?>&npcID=<?php echo $npc['npcID']; ?>"
+                class="menu-sub-item<?php echo $isSelectedNpc ? ' is-active' : ''; ?>">
+                <?php echo htmlspecialchars($npc['npcName']); ?>
+              </a>
+            <?php endforeach; ?>
+          <?php elseif ($selectedCampaignID) : ?>
+            <p class="menu-sub-item">No NPC's found</p>
+          <?php endif; ?>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+            Enemies ▼ 
+        </div>
+
+        <div class="menu-submenu<?php echo $section === 'enemies' ? '' : ' closed'; ?>">
+          <?php if ($selectedCampaignID && count($enemies) > 0) : ?>
+            <?php foreach ($enemies as $enemy) : ?>
+              <?php $isSelectedEnemy = ($selectedEnemyID == $enemy['enemyID']); ?>
+
+              <a href="index.php?section=enemies&campaignID=<?php echo $selectedCampaignID; ?>&enemyID=<?php echo $enemy['enemyID']; ?>"
+                class="menu-sub-item<?php echo $isSelectedEnemy ? ' is-active' : ''; ?>">
+                <?php echo htmlspecialchars($enemy['enemyName']); ?>
+              </a>
+            <?php endforeach; ?>
+          <?php elseif ($selectedCampaignID) : ?>
+            <p class="menu-sub-item">No Enemies found</p>
+          <?php endif; ?>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+            Factions ▼ 
+        </div>
+
+        <div class="menu-submenu<?php echo $section === 'factions' ? '' : ' closed'; ?>">
+          <?php if ($selectedCampaignID && count($factions) > 0) : ?>
+            <?php foreach ($factions as $faction) : ?>
+              <?php $isSelectedFaction = ($selectedFactionID == $faction['factionID']); ?>
+
+              <a href="index.php?section=factions&campaignID=<?php echo $selectedCampaignID; ?>&factionID=<?php echo $faction['factionID']; ?>"
+                class="menu-sub-item<?php echo $isSelectedFaction ? ' is-active' : ''; ?>">
+                <?php echo htmlspecialchars($faction['name']); ?>
+              </a>
+            <?php endforeach; ?>
+          <?php elseif ($selectedCampaignID) : ?>
+            <p class="menu-sub-item">No Factions found</p>
+          <?php endif; ?>
+        </div>
+      </div>
 
       <a
         href="<?php echo $selectedCampaignID ? 'index.php?section=worldDetails&campaignID=' . $selectedCampaignID : '#'; ?>"
