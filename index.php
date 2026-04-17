@@ -8,6 +8,8 @@
     $selectedNpcID = $_GET['npcID'] ?? null;
     $selectedEnemyID = $_GET['enemyID'] ?? null;
     $selectedFactionID = $_GET['factionID'] ?? null;
+    $selectedReligionID = $_GET['religionID'] ?? null;
+    $selectedLanguageID = $_GET['languageID'] ?? null;
 
     $campaigns = [];
 
@@ -141,6 +143,65 @@ if ($selectedCampaignID && $selectedFactionID) {
   $statement->closeCursor();
 }
 
+// world description query
+$selectedWorldDescription = null;
+
+if ($selectedCampaignID) {
+  $query = "SELECT * FROM worldDescription WHERE campaignID = :campaignID";
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $selectedWorldDescription = $statement->fetch();
+  $statement->closeCursor();
+}
+
+// world Religion query
+$religions = [];
+
+if ($selectedCampaignID) {
+  $query = "SELECT religionID, religionName FROM worldReligions WHERE campaignID = :campaignID ORDER BY religionName";
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $religions = $statement->fetchAll();
+  $statement->closeCursor();
+}
+
+$selectedReligion = null;
+
+if ($selectedCampaignID && $selectedReligionID) {
+  $query = "SELECT * FROM worldReligions WHERE religionID = :religionID AND campaignID = :campaignID";
+  $statement = $db->prepare($query);
+  $statement->bindValue(':religionID', $selectedReligionID, PDO::PARAM_INT);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $selectedReligion = $statement->fetch();
+  $statement->closeCursor();
+}
+
+// world languages query
+$languages = [];
+
+if ($selectedCampaignID) {
+  $query = "SELECT languageID, languageName FROM worldLanguages WHERE campaignID = :campaignID ORDER BY languageName";
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $languages = $statement->fetchAll();
+  $statement->closeCursor();
+}
+
+$selectedLanguage = null;
+
+if ($selectedCampaignID && $selectedLanguageID) {
+  $query = "SELECT * FROM worldLanguages WHERE languageID = :languageID AND campaignID = :campaignID";
+  $statement = $db->prepare($query);
+  $statement->bindValue(':languageID', $selectedLanguageID, PDO::PARAM_INT);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->execute();
+  $selectedLanguage = $statement->fetch();
+  $statement->closeCursor();
+}
 
 
 ?>
@@ -174,8 +235,14 @@ if ($selectedCampaignID && $selectedFactionID) {
                     case 'enemies':
                       echo 'Enemies';
                       break;
-                    case 'worldDetails':
-                      echo 'World Details';
+                    case 'worldDescription':
+                      echo 'World Description';
+                      break;
+                    case 'worldReligions':
+                      echo 'World Religions';
+                      break;
+                    case 'worldLanguages':
+                      echo 'World Languages';
                       break;
                     default:
                       echo 'Campaigns';
@@ -282,7 +349,109 @@ if ($selectedCampaignID && $selectedFactionID) {
                       <?php else : ?>
                         <p>Select an NPC from the menu to view details.</p>
                       <?php endif; ?>
+                      
+                      <!--campaign details displays in left panel (Enemies)-->
+
+                      <?php elseif ($section === 'enemies') : ?>
+                      <h3>Enemy Data</h3>
+
+                      <?php if ($selectedEnemy) : ?>
+                        <h4><?php echo htmlspecialchars($selectedEnemy['enemyName']); ?></h4>
+
+                        <p>
+                          <strong>Description:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedEnemy['enemyDescription'])); ?>
+                        </p>
+
+                        <p>
+                          <strong>Notes:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedEnemy['enemyNotes'])); ?>
+                        </p>
+
+                        <p>
+                          <strong>Created:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedEnemy['createdAT'])); ?>
+                        </p>
+                      <?php else : ?>
+                        <p>Select an Enemy from the menu to view details.</p>
                       <?php endif; ?>
+                      
+                      <!--campaign details displays in left panel (Factions)-->
+
+                      <?php elseif ($section === 'factions') : ?>
+                      <h3>Faction Data</h3>
+
+                      <?php if ($selectedFaction) : ?>
+                        <h4><?php echo htmlspecialchars($selectedFaction['name']); ?></h4>
+
+                        <p>
+                          <strong>Description:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedFaction['description'])); ?>
+                        </p>
+
+                        <p>
+                          <strong>Leader:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedFaction['leader'])); ?>
+                        </p>
+
+                        <p>
+                          <strong>Created:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedFaction['createdAt'])); ?>
+                        </p>
+                      <?php else : ?>
+                        <p>Select a Faction from the menu to view details.</p>
+                      <?php endif; ?>
+                      
+                      <!--world details displays in left panel (world description)-->
+
+                      <?php elseif ($section === 'worldDescription') : ?>
+                        <h3>World Description</h3>
+
+                        <?php if ($selectedWorldDescription) : ?>
+                          <h4><?php echo htmlspecialchars($selectedWorldDescription['worldName']); ?></h4>
+                        
+                        <p>
+                          <strong>Description:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedWorldDescription['worldDescription'])); ?>
+                        </p>
+                      <?php else : ?>
+                        <p> no world description found for this campaign.</p>
+                      <?php endif; ?>
+                      
+                      <!--world details displays in left panel (world Religions)-->
+
+                      <?php elseif ($section === 'worldReligions') : ?>
+                        <h3>World Religion Data</h3>
+
+                        <?php if ($selectedReligion) : ?>
+                          <h4><?php echo htmlspecialchars($selectedReligion['religionName']); ?></h4>
+
+                        <p>
+                          <strong>Description:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedReligion['religionDescription'])); ?>
+                        </p>
+                      <?php else : ?>
+                        <p>Select a religion from the menu to view its details.</p>
+                      <?php endif; ?>
+                      
+                      <!--world details displays in left panel (world Languages)-->
+
+                      <?php elseif ($section === 'worldLanguages') : ?>
+                        <h3>World Language Data</h3>
+
+                        <?php if ($selectedLanguage) : ?>
+                          <h4><?php echo htmlspecialchars($selectedLanguage['languageName']); ?></h4>
+
+                        <p>
+                          <strong>Description:</strong><br>
+                          <?php echo nl2br(htmlspecialchars($selectedLanguage['languageDescription'])); ?>
+                        </p>
+                      <?php else : ?>
+                        <p>Select a language from the menu to view its details.</p>
+                      <?php endif; ?>
+                      <?php endif; ?>
+
+
 
                   </div>  
                 </div>

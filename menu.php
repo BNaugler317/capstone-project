@@ -116,13 +116,66 @@
           <?php endif; ?>
         </div>
       </div>
+    </div>
+  </div>
 
+  <div class="menu-group">
+    <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+      World Details ▼
+    </div>
+
+    <div class="menu-submenu<?php echo $selectedCampaignID ? '' : ' closed'; ?>">
       <a
-        href="<?php echo $selectedCampaignID ? 'index.php?section=worldDetails&campaignID=' . $selectedCampaignID : '#'; ?>"
-        class="menu-sub-item<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
+        href="<?php echo $selectedCampaignID ? 'index.php?section=worldDescription&campaignID=' . $selectedCampaignID : '#'; ?>"
+        class="menu-sub-item<?php echo ($section === 'worldDescription') ? ' is-active' : ''; ?><?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>"
       >
-        World Details
+        World Description
       </a>
+
+      <div class="menu-group">
+        <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+          World Religions ▼
+      </div>
+
+      <div class="menu-submenu<?php echo $section === 'worldReligions' ? '' : ' closed'; ?>">
+        <?php if ($selectedCampaignID && count($religions) > 0) : ?>
+          <?php foreach ($religions as $religion) : ?>
+                <?php $isSelectedReligion = ($selectedReligionID == $religion['religionID']); ?>
+
+            <a
+              href="index.php?section=worldReligions&campaignID=<?php echo $selectedCampaignID; ?>&religionID=<?php echo $religion['religionID']; ?>"
+              class="menu-sub-item<?php echo $isSelectedReligion ? ' is-active' : ''; ?>"
+            >
+              <?php echo htmlspecialchars($religion['religionName']); ?>
+            </a>
+          <?php endforeach; ?>
+        <?php elseif ($selectedCampaignID) : ?>
+          <p class="menu-sub-item">No religions found.</p>
+        <?php endif; ?>
+      </div>  
+
+      <div class="menu-group">
+        <div class="menu-group-title menu-toggle<?php echo $selectedCampaignID ? '' : ' is-disabled'; ?>">
+          World Languages ▼
+        </div>
+
+        <div class="menu-submenu<?php echo $section === 'worldLanguages' ? '' : ' closed'; ?>">
+          <?php if ($selectedCampaignID && count($languages) > 0) : ?>
+            <?php foreach ($languages as $language) : ?>
+              <?php $isSelectedLanguage = ($selectedLanguageID == $language['languageID']); ?>
+
+            <a
+                 href="index.php?section=worldLanguages&campaignID=<?php echo $selectedCampaignID; ?>&languageID=<?php echo $language['languageID']; ?>"
+                class="menu-sub-item<?php echo $isSelectedLanguage ? ' is-active' : ''; ?>"
+              >
+                <?php echo htmlspecialchars($language['languageName']); ?>
+              </a>
+            <?php endforeach; ?>
+          ?php elseif ($selectedCampaignID) : ?>
+            <p class="menu-sub-item">No languages found.</p>
+              <?php endif; ?>
+        </div>
+      </div>
     </div>
   </div>
 
