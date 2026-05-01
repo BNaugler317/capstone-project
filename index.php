@@ -11,6 +11,8 @@
     $selectedReligionID = $_GET['religionID'] ?? null;
     $selectedLanguageID = $_GET['languageID'] ?? null;
 
+    $mode = $_GET['mode'] ?? null;
+
     $campaigns = [];
 
     $query = "SELECT campaignID, name, description FROM campaigns ORDER BY name";
@@ -50,6 +52,10 @@ if ($selectedCampaignID) {
 }
 
 $selectedLocation = null;
+$npcCount = 0;
+$enemyCount = 0;
+$locationNpcs = []; 
+$locationEnemies = [];
 
 if ($selectedCampaignID && $selectedLocationID) {
   $query = "SELECT * FROM Locations WHERE locationID = :locationID AND campaignID = :campaignID";
@@ -60,6 +66,47 @@ if ($selectedCampaignID && $selectedLocationID) {
   $statement->execute();
   $selectedLocation = $statement->fetch();
   $statement->closeCursor();
+
+  // calculates NPC count
+
+  $query = "SELECT COALESCE(SUM(quantity), 0) AS npcCount FROM locationNpcs WHERE locationID = :locationID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':locationID', $selectedLocationID, PDO::PARAM_INT);
+  $statement->execute();
+  $npcCount = $statement->fetchColumn();
+  $statement->closeCursor();
+
+  // calculates Enemy count
+
+  $query = "SELECT COALESCE(SUM(quantity), 0) AS enemyCount FROM locationEnemies WHERE locationID = :locationID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':locationID', $selectedLocationID, PDO::PARAM_INT);
+  $statement->execute();
+  $enemyCount = $statement->fetchColumn();
+  $statement->closeCursor();
+
+  // gets NPC names and quantities for selected location
+
+  $query = "SELECT n.npcName, ln.quantity FROM locationNpcs ln JOIN npcs n ON ln.npcID = n.npcID WHERE ln.locationID = :locationID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':locationID', $selectedLocationID, PDO::PARAM_INT);
+  $statement->execute();
+  $locationNpcs = $statement->fetchAll();
+  $statement->closeCursor();
+
+  // gets Enemy names and quantities for selected location
+
+  $query = "SELECT e.enemyName, le.quantity FROM locationEnemies le JOIN Enemies e ON le.enemyID = e.enemyID WHERE le.locationID = :locationID";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':locationID', $selectedLocationID, PDO::PARAM_INT);
+  $statement->execute();
+  $locationEnemies = $statement->fetchAll();
+  $statement->closeCursor();
+
 }
 
 // campaign details NPC's will display list of selectable npc's than display data on left panel
@@ -203,6 +250,129 @@ if ($selectedCampaignID && $selectedLanguageID) {
   $statement->closeCursor();
 }
 
+// campaign data input query 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCampaign'])) {
+  $name = trim($_POST['name']);
+  $description = trim($_POST['description']);
+  $campaignEvents = trim($_POST['campaignEvents']);
+
+  $query = "INSERT INTO campaigns (name, description, campaignEvents) 
+  VALUES (:name, :description, :campaignEvents)";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':name', $name);
+  $statement->bindValue(':description', $description);
+  $statement->bindValue(':campaignEvents', $campaignEvents);
+  $statement->execute();
+  $statement->closeCursor();
+
+  header("Location: index.php?section=campaigns");
+  exit();
+}
+
+// location data input query 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addLocation'])) {
+  $locationName = trim($_POST['locationName']);
+  $locationDescription = trim($_POST['locationDescription']);
+  $locationItems = trim($_POST['locationItems']);
+  $dungeons = trim($_POST['dungeons']);
+
+  $query = "INSERT INTO Locations (campaignID, locationName, locationDescription, locationItems, dungeons)
+  VALUES (:campaignID, :locationName, :locationDescription, :locationItems, :dungeons)";
+
+  $statement = $db->prepare($query);
+  $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+  $statement->bindValue(':locationName', $locationName);
+  $statement->bindValue(':locationDescription', $locationDescription);
+  $statement->bindValue(':locationItems', $locationItems);
+  $statement->bindValue(':dungeons', $dungeons);
+  $statement->execute();
+  $locationID = $db->lastInsertId();
+  $statement->closeCursor();
+
+  $npcIDs = $_POST['npcID'] ?? [];
+  $npcQuantities = $_POST['npcQuantity'] ?? [];
+
+  for ($i = 0; $i < count($npcIDs); $i++) {
+    if (!empty($npcIDs[$i]) && !empty($npcQuantities[$i])) {
+      $query = "INSERT INTO locationNpcs (locationID, npcID, quantity) VALUES (:locationID, :npcID, :quantity)";
+
+      $statement = $db->prepare($query);
+      $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
+      $statement->bindValue(':npcID', $npcIDs[$i], PDO::PARAM_INT);
+      $statement->bindValue(':quantity', $npcQuantities[$i], PDO::PARAM_INT);
+      $statement->execute();
+      $statement->closeCursor();
+      
+    }
+  }
+
+  $enemyIDs = $_POST['enemyID'] ?? [];
+  $enemyQuantities = $_POST['enemyQuantity'] ?? [];
+
+  for ($i = 0; $i < count($enemyIDs); $i++) {
+    if (!empty($enemyIDs[$i]) && !empty($enemyQuantities[$i])) {
+      $query = "INSERT INTO locationEnemies (locationID, enemyID, quantity) VALUES (:locationID, :enemyID, :quantity)";
+
+      $statement = $db->prepare($query);
+      $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
+      $statement->bindValue(':enemyID', $enemyIDs[$i], PDO::PARAM_INT);
+      $statement->bindValue(':quantity', $enemyQuantities[$i], PDO::PARAM_INT);
+      $statement->execute();
+      $statement->closeCursor();
+    }
+  }
+
+  header("Location: index.php?section=locations&campaignID=$selectedCampaignID");
+  exit();
+}
+
+// npc data input query
+
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addNpc'])) {
+    $npcName = trim($_POST['npcName']);
+    $npcDescription = trim($_POST['npcDescription']);
+    $npcNotes = trim($_POST['npcNotes']);
+    
+    $query = "INSERT INTO npcs (campaignID, npcName, npcDescription, npcNotes)
+    VALUES (:campaignID, :npcName, :npcDescription, :npcNotes)";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+    $statement->bindValue(':npcName', $npcName);
+    $statement->bindValue(':npcDescription', $npcDescription);
+    $statement->bindValue(':npcNotes', $npcNotes);
+    $statement->execute();
+    $statement->closeCursor();
+
+    header("Location: index.php?section=npcs&campaignID=$selectedCampaignID");
+    exit();
+  }
+
+  // enemies data input query
+
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEnemy'])) {
+    $enemyName = trim($_POST['enemyName']);
+    $enemyDescription = trim($_POST['enemyDescription']);
+    $enemyNotes = trim($_POST['enemyNotes']);
+    
+    $query = "INSERT INTO Enemies (campaignID, enemyName, enemyDescription, enemyNotes)
+    VALUES (:campaignID, :enemyName, :enemyDescription, :enemyNotes)";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':campaignID', $selectedCampaignID, PDO::PARAM_INT);
+    $statement->bindValue(':enemyName', $enemyName);
+    $statement->bindValue(':enemyDescription', $enemyDescription);
+    $statement->bindValue(':enemyNotes', $enemyNotes);
+    $statement->execute();
+    $statement->closeCursor();
+
+    header("Location: index.php?section=enemies&campaignID=$selectedCampaignID");
+    exit();
+  }
+
 
 ?>
 <!DOCTYPE html>
@@ -296,13 +466,25 @@ if ($selectedCampaignID && $selectedLanguageID) {
 
                       <p>
                         <strong>NPC Count:</strong><br>
-                        <?php echo htmlspecialchars($selectedLocation['npcCount']); ?>
                       </p>
+
+                      <?php foreach ($locationNpcs as $locationNpc): ?>
+                        <p>
+                          <?php echo htmlspecialchars($locationNpc['npcName']); ?>
+                          x<?php echo htmlspecialchars($locationNpc['quantity']); ?>
+                        </p>
+                      <?php endforeach; ?>
 
                       <p>
                         <strong>Enemy Count:</strong><br>
-                        <?php echo htmlspecialchars($selectedLocation['enemyCount']); ?>
                       </p>
+
+                      <?php foreach ($locationEnemies as $locationEnemy): ?>
+                        <p>
+                          <?php echo htmlspecialchars($locationEnemy['enemyName']); ?>
+                          x<?php echo htmlspecialchars($locationEnemy['quantity']); ?>
+                        </p>
+                      <?php endforeach; ?>
 
                       <p>
                         <strong>Location Items:</strong><br>
@@ -450,16 +632,172 @@ if ($selectedCampaignID && $selectedLanguageID) {
                         <p>Select a language from the menu to view its details.</p>
                       <?php endif; ?>
                       <?php endif; ?>
-
-
-
                   </div>  
                 </div>
 
-                <div class="panel panel-editor">
-                  <!-- Right panel input-->
-                </div>
+                <!-- Right panel input-->
 
+                <!--campaign data input-->
+                <div class="panel panel-editor">
+                  <?php if ($section !== 'campaigns' && !$selectedCampaignID) : ?>
+
+                    <p>Select a campaign first.</p>
+
+                  <?php elseif ($section === 'campaigns' && $mode !== 'add') : ?>
+
+                    <a href="index.php?section=campaigns&mode=add" class="menu-item">
+                      Add New Campaign
+                   </a>
+                  <?php elseif ($section === 'campaigns' && $mode === 'add') : ?>
+                    <h3>Add New Campaign</h3>
+
+                    <form method="post">
+                      <div class="form-group">
+                        <label for="name">Campaign Name</label>
+                        <input type="text" id="name" name="name" required>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description"></textarea>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="campaignEvents">Campaign Events</label>
+                        <textarea id="campaignEvents" name="campaignEvents"></textarea>
+                      </div>
+
+                      <button type="submit" name="addCampaign">Submit</button>
+                    </form>
+
+                    <!--location data input-->
+
+                  <?php elseif ($section === 'locations' && $mode !== 'add') : ?>
+
+                        <a href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>&mode=add" class="menu-item">
+                          Add New Location
+                        </a>
+                      
+                  <?php elseif ($section === 'locations' && $mode === 'add') : ?>
+
+                    <h3>Add New Location</h3>
+
+                    <form method="post">
+                      <div class="form-group">
+                        <label for="locationName">Location Name</label>
+                        <input type="text" id="locationName" name="locationName" required>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="locationDescription">Description</label>
+                        <textarea id="locationDescription" name="locationDescription"></textarea>
+                      </div>
+
+                      <h4>NPCs</h4>
+
+                      <div class="npc-row">
+                        <select name="npcID[]">
+                          <option value="">Select NPC</option>
+                          <?php foreach ($npcs as $npc): ?>
+                            <option value="<?php echo $npc['npcID']; ?>">
+                              <?php echo $npc['npcName']; ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+
+                        <input type="number" name="npcQuantity[]" min="1" placeholder="Quantity">
+                      </div>
+
+                      <h4>Enemies</h4>
+
+                      <div class="enemy-row">
+                        <select name="enemyID[]">
+                          <option value="">Select Enemy</option>
+                          <?php foreach ($enemies as $enemy): ?>
+                            <option value="<?php echo $enemy['enemyID']; ?>">
+                              <?php echo $enemy['enemyName']; ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+
+                        <input type="number" name="enemyQuantity[]" min="1" placeholder="Quantity">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="locationItems">Location Items</label>
+                        <textarea id="locationItems" name="locationItems"></textarea>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="dungeons">Dungeons</label>
+                        <textarea id="dungeons" name="dungeons"></textarea>
+                      </div>
+
+                      <button type="submit" name="addLocation">Submit</button>
+                    </form>
+
+
+                    <!--NPC data input-->
+
+                  <?php elseif ($section === 'npcs' && $mode !== 'add') : ?>
+
+                    <a href="index.php?section=npcs&campaignID=<?php echo $selectedCampaignID; ?>&mode=add" class="menu-item">
+                      Add New NPC
+                    </a>
+                      
+                  <?php elseif ($section === 'npcs' && $mode === 'add') : ?>
+
+                    <h3>Add New NPC</h3>
+
+                    <form method="post">
+                      <div class="form-group">
+                        <label for="npcName">NPC Name</label>
+                        <input type="text" id="npcName" name="npcName" required>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="npcDescription">Description</label>
+                        <textarea id="npcDescription" name="npcDescription"></textarea>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="npcNotes">Notes</label>
+                        <textarea id="npcNotes" name="npcNotes"></textarea>
+                      </div>
+                      <button type="submit" name="addNpc">Submit</button>
+                    </form>
+
+                    <!--Enemy data input-->
+
+                  <?php elseif ($section === 'enemies' && $mode !== 'add') : ?>
+
+                    <a href="index.php?section=enemies&campaignID=<?php echo $selectedCampaignID; ?>&mode=add" class="menu-item">
+                      Add New Enemy
+                    </a>
+                      
+                  <?php elseif ($section === 'enemies' && $mode === 'add') : ?>
+
+                    <h3>Add New Enemy</h3>
+
+                    <form method="post">
+                      <div class="form-group">
+                        <label for="enemyName">Enemy Name</label>
+                        <input type="text" id="enemyName" name="enemyName" required>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="enemyDescription">Description</label>
+                        <textarea id="enemyDescription" name="enemyDescription"></textarea>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="enemyNotes">Notes</label>
+                        <textarea id="enemyNotes" name="enemyNotes"></textarea>
+                      </div>
+                      <button type="submit" name="addEnemy">Submit</button>
+                    </form>
+                  <?php endif; ?>
+                </div>
               </div>
 
             </section>

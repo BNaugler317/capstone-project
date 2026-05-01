@@ -320,3 +320,80 @@ footer.footer {
   overflow: auto;
   flex: 1;
 }
+
+.panel-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.panel-editor form {
+  width: 80%;
+  max-width: 400px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.panel-editor h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.panel-editor button {
+  display: block;
+  margin: 10px auto;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.panel-editor form {
+  width: 80%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.panel-editor .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.panel-editor .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.panel-editor .form-group input,
+.panel-editor .form-group textarea {
+  display: block;
+  width: 100%;
+}
+
+.panel-editor {
+  max-height: 500px;   /* adjust based on your layout */
+  overflow-y: auto;
+}

@@ -49,7 +49,12 @@
               </a>
             <?php endforeach; ?>
           <?php elseif ($selectedCampaignID) : ?>
-            <p class="menu-sub-item">No locations found</p>
+            <a
+              href="index.php?section=locations&campaignID=<?php echo $selectedCampaignID; ?>"
+              class="menu-sub-item">
+              No locations found
+            </a>
+
           <?php endif; ?>
         </div>
       </div>
@@ -70,7 +75,11 @@
               </a>
             <?php endforeach; ?>
           <?php elseif ($selectedCampaignID) : ?>
-            <p class="menu-sub-item">No NPC's found</p>
+            <a
+              href="index.php?section=npcs&campaignID=<?php echo $selectedCampaignID; ?>"
+              class="menu-sub-item">
+              No NPC's found
+            </a>
           <?php endif; ?>
         </div>
       </div>
@@ -91,7 +100,11 @@
               </a>
             <?php endforeach; ?>
           <?php elseif ($selectedCampaignID) : ?>
-            <p class="menu-sub-item">No Enemies found</p>
+            <a
+              href="index.php?section=enemies&campaignID=<?php echo $selectedCampaignID; ?>"
+              class="menu-sub-item">
+              No Enemies found
+            </a>
           <?php endif; ?>
         </div>
       </div>
@@ -171,7 +184,7 @@
                 <?php echo htmlspecialchars($language['languageName']); ?>
               </a>
             <?php endforeach; ?>
-          ?php elseif ($selectedCampaignID) : ?>
+          <?php elseif ($selectedCampaignID) : ?>
             <p class="menu-sub-item">No languages found.</p>
               <?php endif; ?>
         </div>
